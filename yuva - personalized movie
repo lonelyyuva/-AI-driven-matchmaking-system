@@ -1,0 +1,24 @@
+import streamlit as st
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import LabelEncoder
+
+genres = ['Action', 'Comedy', 'Drama', 'Romance']
+model = RandomForestClassifier()
+le = LabelEncoder().fit(genres)
+model.fit([[25, le.transform(['Action'])[0]],
+           [30, le.transform(['Romance'])[0]],
+           [22, le.transform(['Comedy'])[0]]],
+          [1, 0, 1])
+
+st.title("AI Movie Matchmaker")
+st.write("Predict if a user will like a movie based on age and genre.")
+
+age = st.slider("Select User Age", 10, 80, 25)
+genre = st.selectbox("Select Movie Genre", genres)
+
+if st.button("Predict"):
+    genre_encoded = le.transform([genre])[0]
+    pred = model.predict([[age, genre_encoded]])[0]
+    result = "User is likely to LIKE this movie." if pred == 1 else "User may NOT like this movie."
+    st.success(result)
